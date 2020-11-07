@@ -4,8 +4,10 @@ Helps you calculate weight and balance for a Cessna 172 (R or S model), as well 
 This should be used to double-check a hand-written weight and balance.
 
 Two modes:
+
 Rough Estimate Mode
 - Will not be completely accurate as the Arm values are based off of the 172-R/172-S POH. Faster but not truly accurate and therefore not as safe to use.
+
 Accurate Mode
 - Allows for insertion of custom Arm values for accurate calculations. Takes more time but is more accurate and therefore safer.
 
