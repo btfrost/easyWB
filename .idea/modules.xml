@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/easyWB.iml" filepath="$PROJECT_DIR$/.idea/easyWB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/easyWBcode.iml" filepath="$PROJECT_DIR$/easyWBcode.iml" />
     </modules>
   </component>
 </project>
