@@ -11,6 +11,8 @@ Rough Estimate Mode
 Accurate Mode
 - Allows for insertion of custom Arm values for accurate calculations. Takes more time but is more accurate and therefore safer.
 
+![Start Page](https://github.com/btfrost/easyWB/blob/main/start.png?raw=true)
+
 Values required for complete run:
 - (select) R or S model
 - Empty weight (Weight, Arm, Movement)
@@ -19,6 +21,8 @@ Values required for complete run:
 - Baggage area 1 weight, Arm
 - Baggage area 2 weight, Arm
 - Fuel in pounds, Arm
+
+![Save/Load Example in Accurate Mode (No default ARM values)](https://github.com/btfrost/easyWB/blob/main/saveloadexample.png?raw=true)
 
 Features to implement:
 - Ability to save empty weight and balance associated with a tail number
