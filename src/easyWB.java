@@ -1,5 +1,6 @@
-public class easyWB {
+public class easyWB extends GUI{
+
     public static void main(String[] args) {
-        System.out.println("test");
+        new GUI();
     }
 }

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="easyWBcode:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/easyWBcode_jar</output-path>
+    <root id="archive" name="easyWBcode.jar">
+      <element id="module-output" name="easyWBcode" />
+    </root>
+  </artifact>
+</component>
