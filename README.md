@@ -22,7 +22,7 @@ Values required for complete run:
 - Baggage area 2 weight, Arm
 - Fuel in pounds, Arm
 
-![Save/Load Example in Accurate Mode (No default ARM values)](https://github.com/btfrost/easyWB/blob/main/saveloadexample.png?raw=true)
+![Full Calculation Example](https://github.com/btfrost/easyWB/blob/main/fullcalculation.png)
 
 Features to implement:
 - Ability to save empty weight and balance associated with a tail number
