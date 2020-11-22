@@ -2,11 +2,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class GUI extends wbProfile implements ActionListener{
 
     // Global Variables
+
+        FileOutputStream fos;
+
+        {
+                try {
+                        fos = new FileOutputStream("saved-profiles.txt",true);
+                } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                }
+        }
+
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(fos));
 
         private final JFrame frame;
 
@@ -21,6 +36,7 @@ public class GUI extends wbProfile implements ActionListener{
 
         private final JButton loadButton;
         private final JButton saveButton;
+        private final JButton calculateButton;
 
         private JTextField typeTextField;
         private JTextField tailNumberTextField;
@@ -68,13 +84,13 @@ public class GUI extends wbProfile implements ActionListener{
 
     public GUI() {
 
-        // Frame //
+            // Frame //
 
             frame = new JFrame("easyWB: For all your weight and balance needs");
-            frame.setSize(300,500);
+            frame.setSize(300, 500);
             frame.setResizable(false);
 
-        // Buttons //
+            // Buttons //
 
             // REM Button
             remodeButton = new JButton("Rough Estimate Mode");
@@ -112,7 +128,16 @@ public class GUI extends wbProfile implements ActionListener{
             saveButton.setFocusable(false);
             saveButton.setFont(new Font("Roboto", Font.PLAIN, 15));
 
-        // Labels //
+            // Calculate Button
+            calculateButton = new JButton("Calculate");
+            calculateButton.addActionListener(this);
+            calculateButton.setPreferredSize(new Dimension(50, 30));
+            calculateButton.setBounds(50, 50, 50, 30);
+            calculateButton.setBackground(Color.orange);
+            calculateButton.setFocusable(false);
+            calculateButton.setFont(new Font("Roboto", Font.PLAIN, 15));
+
+            // Labels //
 
             // Welcome Label
             JLabel welcomeLabel = new JLabel("Welcome to easyWB! Please select an option.");
@@ -122,11 +147,11 @@ public class GUI extends wbProfile implements ActionListener{
 
             wbPanelLabelCreate();
 
-        // Text Fields //
+            // Text Fields //
 
             createTextFields();
 
-        // Panels //
+            // Panels //
 
             // Welcome Panel, disappears after initial option select
             JPanel welcomePanel = new JPanel();
@@ -140,12 +165,12 @@ public class GUI extends wbProfile implements ActionListener{
             // WB Panel
             wbPanel = new JPanel();
             wbPanel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
-            wbPanel.setLayout(new GridLayout(15, 4,15 ,10));
+            wbPanel.setLayout(new GridLayout(15, 4, 15, 10));
             wbPanelLabelAndTextFieldAdd();
             wbPanel.setBackground(Color.darkGray);
 
 
-        // Additional Frame Commands //
+            // Additional Frame Commands //
 
             frame.setContentPane(welcomePanel);
             frame.invalidate();
@@ -153,6 +178,38 @@ public class GUI extends wbProfile implements ActionListener{
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
             frame.setVisible(true);
+
+            // Read in info from profile file, and store into HashMap //
+            try{
+                    File file = new File("saved-profiles.txt");
+                    Scanner read = new Scanner(file);
+                    read.useDelimiter(" ");
+                    String readType, readTailNum, readWeight, readArm, readMoment;
+                    while (read.hasNextLine()) {
+                            readType = read.next();
+                            System.out.println(readType);
+                            readTailNum = read.next();
+                            System.out.println(readTailNum);
+                            readWeight = read.next();
+                            System.out.println(readWeight);
+                            readArm = read.next();
+                            System.out.println(readArm);
+                            readMoment = read.next();
+                            System.out.println(readMoment);
+                            if(readType != null && readTailNum != null && readWeight != null &&
+                            readArm != null && readMoment != null){
+                                    wbProfile wb = new wbProfile(readType, readTailNum, readWeight, readArm, readMoment);
+                                    profileHashMap.put(readTailNum, wb);
+                            }
+                            if(read.hasNextLine() && read.nextLine().equals("")){
+                                    break;
+                            }
+                    }
+                    read.close();
+            } catch (Exception ex) {
+                    ex.printStackTrace();
+            }
+
     }
 
     // Actions to be taken when each button is pressed
@@ -163,6 +220,13 @@ public class GUI extends wbProfile implements ActionListener{
                     frame.setContentPane(wbPanel);
                     frame.invalidate();
                     frame.validate();
+                    pilotFrontPassengerArmTextField.setText("37");
+                    rearPassengerArmTextField.setText("73");
+                    baggageArea1ArmTextField.setText("95");
+                    baggageArea2ArmTextField.setText("123");
+                    fuelInPoundsArmTextField.setText("48");
+                    taxiRunUpArmTextField.setText("48");
+                    fuelBurnArmTextField.setText("48");
             }
             if (e.getSource()==accmodeButton){
                     frame.setContentPane(wbPanel);
@@ -178,14 +242,227 @@ public class GUI extends wbProfile implements ActionListener{
             }
             if (e.getSource()==saveButton){
                     // Store values into wbProfile object, then put into hashMap
-                    String type = typeTextField.getText();
-                    String tailNumber = tailNumberTextField.getText();
-                    String emptyWeight = emptyWeightWeightTextField.getText();
-                    String emptyArm = emptyWeightArmTextField.getText();
-                    String emptyMoment = emptyWeightMomentTextField.getText();
+                    String type;
+                    String tailNumber;
+                    String emptyWeight;
+                    String emptyArm;
+                    String emptyMoment;
+
+                    if (typeTextField.getText().isEmpty()){ type = "1"; }
+                    else { type = typeTextField.getText(); }
+
+                    if (tailNumberTextField.getText().isEmpty()){ tailNumber = ""; }
+                    else { tailNumber = tailNumberTextField.getText(); }
+
+                    if (emptyWeightWeightTextField.getText().isEmpty()){ emptyWeight = ""; }
+                    else { emptyWeight = emptyWeightWeightTextField.getText(); }
+
+                    if (emptyWeightArmTextField.getText().isEmpty()){ emptyArm = ""; }
+                    else { emptyArm = emptyWeightArmTextField.getText(); }
+
+                    if (emptyWeightMomentTextField.getText().isEmpty()){ emptyMoment = ""; }
+                    else { emptyMoment = emptyWeightMomentTextField.getText(); }
+
+                    // Store new info into HashMap
                     wbProfile wb = new wbProfile(type, tailNumber, emptyWeight, emptyArm, emptyMoment);
                     profileHashMap.put(tailNumber, wb);
+
+                    writer.print(type + " ");
+                    writer.print(tailNumber + " ");
+                    writer.print(emptyWeight + " ");
+                    writer.print(emptyArm + " ");
+                    writer.print(emptyMoment + " ");
+                    writer.print("\n");
+                    writer.flush();
             }
+            if (e.getSource()==calculateButton){
+                calculation();
+            }
+    }
+
+    public void calculation() {
+            double momentCalc ;
+            double weightComponent;
+            double armComponent;
+            String output;
+            DecimalFormat dc = new DecimalFormat("0.00");
+
+            // Pilot / Front Passenger Calculation //
+            if (pilotFrontPassengerWeightTextField.getText().equals("")){
+                    pilotFrontPassengerWeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(pilotFrontPassengerWeightTextField.getText());
+            }
+            if (pilotFrontPassengerArmTextField.getText().equals("")) {
+                    pilotFrontPassengerArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(pilotFrontPassengerArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            pilotFrontPassengerMomentTextField.setText(output);
+
+            // Rear Passenger Calculation //
+            if (rearPassengerWeightTextField.getText().equals("")){
+                    rearPassengerWeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(rearPassengerWeightTextField.getText());
+            }
+            if (rearPassengerArmTextField.getText().equals("")) {
+                    rearPassengerArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(rearPassengerArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            rearPassengerMomentTextField.setText(output);
+
+            // Baggage Area 1 Calculation //
+            if (baggageArea1WeightTextField.getText().equals("")){
+                    baggageArea1WeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(baggageArea1WeightTextField.getText());
+            }
+            if (baggageArea1ArmTextField.getText().equals("")) {
+                    baggageArea1ArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(baggageArea1ArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            baggageArea1MomentTextField.setText(output);
+
+            // Baggage Area 2 Calculation //
+            if (baggageArea2WeightTextField.getText().equals("")){
+                    baggageArea2WeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(baggageArea2WeightTextField.getText());
+            }
+            if (baggageArea2ArmTextField.getText().equals("")) {
+                    baggageArea2ArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(baggageArea2ArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            baggageArea2MomentTextField.setText(output);
+
+            // Zero Fuel Weight Calculation //
+            weightComponent = (Double.parseDouble(emptyWeightWeightTextField.getText()) +
+                    Double.parseDouble(pilotFrontPassengerWeightTextField.getText()) +
+                    Double.parseDouble(rearPassengerWeightTextField.getText()) +
+                    Double.parseDouble(baggageArea1WeightTextField.getText()) +
+                    Double.parseDouble(baggageArea2WeightTextField.getText()));
+            output = dc.format(weightComponent);
+            zeroFuelWeightWeightTextField.setText(output);
+            momentCalc = (Double.parseDouble(emptyWeightMomentTextField.getText()) +
+                    Double.parseDouble(pilotFrontPassengerMomentTextField.getText()) +
+                    Double.parseDouble(rearPassengerMomentTextField.getText()) +
+                    Double.parseDouble(baggageArea1MomentTextField.getText()) +
+                    Double.parseDouble(baggageArea2MomentTextField.getText()));
+            output = dc.format(momentCalc);
+            zeroFuelWeightMomentTextField.setText(output);
+            armComponent = momentCalc / weightComponent;
+            output = dc.format(armComponent);
+            zeroFuelWeightArmTextField.setText(output);
+
+            // Fuel in Pound Calculation //
+            if (fuelInPoundsWeightTextField.getText().equals("")){
+                    fuelInPoundsWeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(fuelInPoundsWeightTextField.getText());
+            }
+            if (fuelInPoundsArmTextField.getText().equals("")) {
+                    fuelInPoundsArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(fuelInPoundsArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            fuelInPoundsMomentTextField.setText(output);
+
+            // Ramp Weight Calculation //
+            weightComponent = (Double.parseDouble(zeroFuelWeightWeightTextField.getText()) +
+                    Double.parseDouble(fuelInPoundsWeightTextField.getText()));
+            output = dc.format(weightComponent);
+            rampWeightWeightTextField.setText(output);
+            momentCalc = (Double.parseDouble(zeroFuelWeightMomentTextField.getText()) +
+                    Double.parseDouble(fuelInPoundsMomentTextField.getText()));
+            output = dc.format(momentCalc);
+            rampWeightMomentTextField.setText(output);
+            armComponent = momentCalc / weightComponent;
+            output = dc.format(armComponent);
+            rampWeightArmTextField.setText(output);
+
+            // Taxi/Run-Up Calculation //
+            if (taxiRunUpWeightTextField.getText().equals("")){
+                    taxiRunUpWeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(taxiRunUpWeightTextField.getText());
+            }
+            if (taxiRunUpArmTextField.getText().equals("")) {
+                    taxiRunUpArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(taxiRunUpArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            taxiRunUpMomentTextField.setText(output);
+
+            // Takeoff Weight Calculation //
+            weightComponent = (Double.parseDouble(rampWeightWeightTextField.getText()) +
+                    Double.parseDouble(taxiRunUpWeightTextField.getText()));
+            output = dc.format(weightComponent);
+            takeoffWeightWeightTextField.setText(output);
+            momentCalc = (Double.parseDouble(rampWeightMomentTextField.getText()) +
+                    Double.parseDouble(taxiRunUpMomentTextField.getText()));
+            output = dc.format(momentCalc);
+            takeoffWeightMomentTextField.setText(output);
+            armComponent = momentCalc / weightComponent;
+            output = dc.format(armComponent);
+            takeoffWeightArmTextField.setText(output);
+
+            // Fuel Burn Calculation //
+            if (fuelBurnWeightTextField.getText().equals("")){
+                    fuelBurnWeightTextField.setText("0.00");
+                    weightComponent = 0;
+            } else {
+                    weightComponent = Double.parseDouble(fuelBurnWeightTextField.getText());
+            }
+            if (fuelBurnArmTextField.getText().equals("")) {
+                    fuelBurnArmTextField.setText("0.00");
+                    armComponent = 0;
+            } else {
+                    armComponent = Double.parseDouble(fuelBurnArmTextField.getText());
+            }
+            momentCalc = weightComponent * armComponent;
+            output = dc.format(momentCalc);
+            fuelBurnMomentTextField.setText(output);
+
+            // Landing Weight Calculation //
+            weightComponent = (Double.parseDouble(takeoffWeightWeightTextField.getText()) +
+                    Double.parseDouble(fuelBurnWeightTextField.getText()));
+            output = dc.format(weightComponent);
+            landingWeightWeightTextField.setText(output);
+            momentCalc = (Double.parseDouble(takeoffWeightMomentTextField.getText()) +
+                    Double.parseDouble(fuelBurnMomentTextField.getText()));
+            output = dc.format(momentCalc);
+            landingWeightMomentTextField.setText(output);
+            armComponent = momentCalc / weightComponent;
+            output = dc.format(armComponent);
+            landingWeightArmTextField.setText(output);
     }
 
     public void createTextFields() {
@@ -394,7 +671,7 @@ public class GUI extends wbProfile implements ActionListener{
     }
     public void wbPanelLabelAndTextFieldAdd() {
 
-            wbPanel.add(new JLabel());
+            wbPanel.add(calculateButton);
             wbPanel.add(new JLabel());
             wbPanel.add(typeLabel);
             wbPanel.add(tailNumberLabel);
